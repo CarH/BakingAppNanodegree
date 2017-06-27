@@ -15,7 +15,7 @@ public class BakingApp extends Application {
         super.onCreate();
 
         if (BuildConfig.DEBUG) {
-            Log.v("StockHawk", "Setting debug");
+            Log.v("BakingApp", "Setting debug");
             Timber.uprootAll();
             Timber.plant(new Timber.DebugTree() {
                 @Override
