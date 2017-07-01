@@ -1,17 +1,40 @@
 package com.baqueta.bakingapp.entities;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.List;
 
 /**
  * Created by CarH on 25/06/2017.
  */
 
-public class Recipe {
+public class Recipe implements Parcelable {
     private String name;
     private List<Ingredient> ingredients;
     private List<Step> steps;
     private int servings;
     private String image;
+
+    protected Recipe(Parcel in) {
+        name = in.readString();
+        servings = in.readInt();
+        image = in.readString();
+        ingredients = in.readArrayList(Ingredient.class.getClassLoader());
+        steps = in.readArrayList(Step.class.getClassLoader());
+    }
+
+    public static final Creator<Recipe> CREATOR = new Creator<Recipe>() {
+        @Override
+        public Recipe createFromParcel(Parcel in) {
+            return new Recipe(in);
+        }
+
+        @Override
+        public Recipe[] newArray(int size) {
+            return new Recipe[size];
+        }
+    };
 
     public String getName() {
         return name;
@@ -56,5 +79,21 @@ public class Recipe {
     @Override
     public String toString() {
         return this.name;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(name);
+        parcel.writeInt(servings);
+        parcel.writeString(image);
+        parcel.writeList(ingredients);
+        parcel.writeList(steps);
+//        parcel.writeParcelable(ingredients, flags);
+//        parcel.writeParcelableArray(steps, flags);
     }
 }

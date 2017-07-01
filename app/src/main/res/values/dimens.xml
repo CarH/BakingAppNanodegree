@@ -2,4 +2,5 @@
 <resources>
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="cardview_recipe_padding">100dp</dimen>
+    <dimen name="step_recipe_padding">50dp</dimen>
 </resources>

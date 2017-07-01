@@ -1,5 +1,6 @@
 package com.baqueta.bakingapp.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -26,6 +27,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
+import timber.log.Timber;
 
 /**
  * Created by CarH on 04/05/2017.
@@ -84,7 +86,14 @@ public class RecipeListFragment extends Fragment {
             public void onClick(View view) {
                 Toast.makeText(getContext(), ((TextView)view).getText(), Toast.LENGTH_SHORT).show();
                 int selectedPosition = getAdapterPosition();
-               
+
+                Timber.d("recipe selected: " + recipes.get(selectedPosition));
+
+                // TODO: move this logic to the host activity when implementing Master / Detail layout
+                Intent intent = new Intent(getActivity(), RecipeDetailActivity.class);
+                intent.putExtra("recipe", recipes.get(selectedPosition));
+
+                getActivity().startActivity(intent);
             }
         }
 
