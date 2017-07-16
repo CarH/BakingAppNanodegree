@@ -89,7 +89,6 @@ public class RecipeListFragment extends Fragment {
 
                 Timber.d("recipe selected: " + recipes.get(selectedPosition));
 
-                // TODO: move this logic to the host activity when implementing Master / Detail layout
                 Intent intent = new Intent(getActivity(), RecipeDetailActivity.class);
                 intent.putExtra("recipe", recipes.get(selectedPosition));
 

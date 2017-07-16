@@ -5,10 +5,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 
 import com.baqueta.bakingapp.R;
+import com.baqueta.bakingapp.entities.Ingredient;
 import com.baqueta.bakingapp.entities.Recipe;
+import com.baqueta.bakingapp.entities.Step;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -17,12 +20,13 @@ import butterknife.ButterKnife;
  * Created by CarH on 27/06/2017.
  */
 
-public class RecipeDetailActivity extends AppCompatActivity {
+public class RecipeDetailActivity extends AppCompatActivity implements RecipeDetailFragment.IngredientDetailClick, RecipeDetailFragment.StepDetailClick{
     public static final String LOG_TAG = RecipeDetailActivity.class.getSimpleName();
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    private Recipe recipe;
+    private Recipe mRecipe;
+    private boolean mTwoPane;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -32,16 +36,37 @@ public class RecipeDetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         Intent intent = getIntent();
-        recipe = intent.getParcelableExtra("recipe");
-        getSupportActionBar().setTitle(recipe.getName());
+        mRecipe = intent.getParcelableExtra("recipe");
+        getSupportActionBar().setTitle(mRecipe.getName());
 
-        Log.d(LOG_TAG, "Recipe received: " + recipe.getName());
+        mTwoPane = getSupportFragmentManager().findFragmentById(R.id.recipe_detail_container) != null;
+    }
 
-        if (savedInstanceState == null) {
-            RecipeDetailFragment detailFragment = RecipeDetailFragment.instance(recipe);
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.detail_fragment_container, detailFragment)
-                    .commit();
+    @Override
+    public void onStart() {
+        super.onStart();
+        RecipeDetailFragment recipeDetailFragment = (RecipeDetailFragment) getSupportFragmentManager().findFragmentById(R.id.recipe_detail_fragment);
+        recipeDetailFragment.setRecipe(mRecipe);
+    }
+
+    @Override
+    public void onClick(ArrayList<Ingredient> ingredients) {
+        if (!mTwoPane) {
+            Intent intent = new Intent(getApplicationContext(), IngredientsDetailActivity.class);
+            intent.putParcelableArrayListExtra("ingredients", ingredients);
+            startActivity(intent);
         }
+        // TODO two pane logic
+    }
+
+    @Override
+    public void onClick(Step step) {
+        if (!mTwoPane) {
+            Intent intent = new Intent(getApplicationContext(), StepDetailActivity.class);
+            intent.putParcelableArrayListExtra("mSteps", (ArrayList<Step>)mRecipe.getSteps());
+            intent.putExtra("stepId", step.getId());
+            startActivity(intent);
+        }
+        // TODO two pane logic
     }
 }

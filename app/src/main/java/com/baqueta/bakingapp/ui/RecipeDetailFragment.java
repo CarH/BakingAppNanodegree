@@ -9,15 +9,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.baqueta.bakingapp.R;
+import com.baqueta.bakingapp.entities.Ingredient;
 import com.baqueta.bakingapp.entities.Recipe;
 import com.baqueta.bakingapp.entities.Step;
 
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
 /**
  * Created by CarH on 26/06/2017.
@@ -28,8 +29,16 @@ public class RecipeDetailFragment extends Fragment {
     @BindView(R.id.recyclerview_recipe_detail)
     RecyclerView mDetailRecyclerView;
 
-    private Recipe recipe;
     private DetailRecipeAdapter mAdapter;
+
+
+    public interface IngredientDetailClick {
+        public void onClick(ArrayList<Ingredient> ingredients);
+    }
+
+    public interface StepDetailClick {
+        public void onClick(Step step);
+    }
 
     public RecipeDetailFragment(){}
 
@@ -45,7 +54,7 @@ public class RecipeDetailFragment extends Fragment {
         private final int INGREDIENT_TYPE = 0;
         private final int STEP_TYPE = 1;
 
-        private final Recipe recipe;
+        private Recipe recipe;
 
         class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
@@ -55,26 +64,29 @@ public class RecipeDetailFragment extends Fragment {
             public ViewHolder(View view) {
                 super(view);
                 ButterKnife.bind(this, view);
+                view.setOnClickListener(this);
             }
 
             @Override
             public void onClick(View view) {
                 if (getItemViewType() == INGREDIENT_TYPE) {
-
+                    ((IngredientDetailClick)getActivity())
+                            .onClick((ArrayList<Ingredient>)recipe.getIngredients());
                 } else if (getItemViewType() == STEP_TYPE){
-
+                    ((StepDetailClick)getActivity())
+                            .onClick(recipe.getSteps().get(getAdapterPosition()-1));
                 }
             }
         }
 
 
-        public DetailRecipeAdapter(Recipe recipe) {
-            this.recipe = recipe;
+        public DetailRecipeAdapter() {
+            this.recipe = new Recipe();
         }
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_detail_step_item, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.step_list_item, parent, false);
             return new ViewHolder(view);
         }
 
@@ -107,6 +119,10 @@ public class RecipeDetailFragment extends Fragment {
             return (position < 1) ? 0 : 1;
         }
 
+        public void swap(Recipe recipe) {
+            this.recipe = recipe;
+            notifyDataSetChanged();
+        }
     }
 
 
@@ -115,14 +131,15 @@ public class RecipeDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.recipe_detail_fragment, container, false);
         ButterKnife.bind(this, root);
-        this.recipe = getArguments().getParcelable("recipe");
 
-        mAdapter = new DetailRecipeAdapter(this.recipe);
+        mAdapter = new DetailRecipeAdapter();
         mDetailRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mDetailRecyclerView.setAdapter(mAdapter);
 
-        Timber.d("REcipe (Detail Fragment): " + recipe.getName());
-        Toast.makeText(getContext(), "REcipe (Detail Fragment): " + recipe.getName(), Toast.LENGTH_LONG).show();
         return root;
+    }
+
+    public void setRecipe(Recipe recipe) {
+        this.mAdapter.swap(recipe);
     }
 }

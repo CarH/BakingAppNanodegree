@@ -21,9 +21,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.RecipeDetailActivity">
-
-        </activity>
+        <activity android:name=".ui.RecipeDetailActivity"/>
+        <activity android:name=".ui.IngredientsDetailActivity"/>
+        <activity android:name=".ui.StepDetailActivity"/>
 
     </application>
 

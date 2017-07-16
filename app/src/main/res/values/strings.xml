@@ -4,4 +4,9 @@
     <string name="fetching_recipes_message">Fetching recipes...</string>
     <string name="baking_time">Baking Time</string>
     <string name="ingredients">Ingredients</string>
+    <string name="ingredients_key">ingredients</string>
+    <string name="step_key">step</string>
+    <string name="step">Step</string>
+    <string name="menu_prev">Previous Step</string>
+    <string name="menu_next">Next Step</string>
 </resources>
