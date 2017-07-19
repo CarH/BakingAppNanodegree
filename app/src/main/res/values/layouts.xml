@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="isTwoPane">false</bool>
+    <integer name="recipe_list_span_cnt">1</integer>
+    <integer name="first_margin_top_margin">@dimen/list_item_vertical_margin</integer>
+</resources>

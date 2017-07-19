@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.FrameLayout;
 
 import com.baqueta.bakingapp.R;
 import com.baqueta.bakingapp.entities.Ingredient;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 /**
  * Created by CarH on 27/06/2017.
@@ -25,6 +27,10 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+
+    @Nullable @BindView(R.id.recipe_detail_container)
+    FrameLayout detailContainer;
+
     private Recipe mRecipe;
     private boolean mTwoPane;
 
@@ -39,7 +45,9 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
         mRecipe = intent.getParcelableExtra("recipe");
         getSupportActionBar().setTitle(mRecipe.getName());
 
-        mTwoPane = getSupportFragmentManager().findFragmentById(R.id.recipe_detail_container) != null;
+        mTwoPane = detailContainer != null;
+
+        Timber.d("Is Two Pane Mode? " + mTwoPane);
     }
 
     @Override
@@ -55,8 +63,12 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
             Intent intent = new Intent(getApplicationContext(), IngredientsDetailActivity.class);
             intent.putParcelableArrayListExtra("ingredients", ingredients);
             startActivity(intent);
+        } else {
+            IngredientsDetailFragment detailFragment = IngredientsDetailFragment.instance(ingredients);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.recipe_detail_container, detailFragment)
+                    .commit();
         }
-        // TODO two pane logic
     }
 
     @Override
@@ -66,7 +78,12 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
             intent.putParcelableArrayListExtra("mSteps", (ArrayList<Step>)mRecipe.getSteps());
             intent.putExtra("stepId", step.getId());
             startActivity(intent);
+        } else {
+            StepDetailFragment detailFragment = StepDetailFragment
+                    .instance((ArrayList<Step>)mRecipe.getSteps(), step.getId());
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.recipe_detail_container, detailFragment)
+                    .commit();
         }
-        // TODO two pane logic
     }
 }

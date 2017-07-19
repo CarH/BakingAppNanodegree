@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">BakingApp</string>
     <string name="could_not_fetch_recipes">There is no recipes to display. Please check your internet connection.</string>
-    <string name="fetching_recipes_message">Fetching recipes...</string>
+    <string name="fetching_recipes_message">Fetching recipes…</string>
     <string name="baking_time">Baking Time</string>
-    <string name="ingredients">Ingredients</string>
+    <string name="recipe_ingredients">Recipe Ingredients</string>
     <string name="ingredients_key">ingredients</string>
     <string name="step_key">step</string>
     <string name="step">Step</string>

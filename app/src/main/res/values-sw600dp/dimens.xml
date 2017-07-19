@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="activity_horizontal_margin">32dp</dimen>
+    <dimen name="cardview_recipe_padding">120dp</dimen>
+    <dimen name="step_recipe_padding">70dp</dimen>
+</resources>

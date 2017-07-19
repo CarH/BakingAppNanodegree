@@ -9,7 +9,7 @@
     <include layout="@layout/app_toolbar" />
 
     <fragment
-        android:id="@+id/recipe_list_fragment"
+        android:id="@+id/recipe_detail_fragment"
         android:name="com.baqueta.bakingapp.ui.RecipeListFragment"
         android:layout_height="match_parent"
         android:layout_width="match_parent"

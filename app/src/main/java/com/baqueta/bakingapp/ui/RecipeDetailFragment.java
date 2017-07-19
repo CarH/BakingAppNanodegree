@@ -86,7 +86,7 @@ public class RecipeDetailFragment extends Fragment {
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.step_list_item, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_detail_list_item, parent, false);
             return new ViewHolder(view);
         }
 
@@ -95,7 +95,7 @@ public class RecipeDetailFragment extends Fragment {
 
             switch (holder.getItemViewType()){
                 case INGREDIENT_TYPE: {
-                    holder.stepDesc.setText(R.string.ingredients);
+                    holder.stepDesc.setText(R.string.recipe_ingredients);
                     break;
                 }
                 case STEP_TYPE:
@@ -116,7 +116,7 @@ public class RecipeDetailFragment extends Fragment {
 
         @Override
         public int getItemViewType(int position) {
-            return (position < 1) ? 0 : 1;
+            return (position < 1) ? INGREDIENT_TYPE : STEP_TYPE;
         }
 
         public void swap(Recipe recipe) {

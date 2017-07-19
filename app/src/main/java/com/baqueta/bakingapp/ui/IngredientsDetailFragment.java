@@ -72,7 +72,7 @@ public class IngredientsDetailFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.ingredient_detail_fragment, container, false);
+        View view = inflater.inflate(R.layout.ingredients_detail_fragment, container, false);
         ButterKnife.bind(this, view);
         ArrayList<Ingredient> ingredients = getArguments().getParcelableArrayList(INGREDIENTS_KEY);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
