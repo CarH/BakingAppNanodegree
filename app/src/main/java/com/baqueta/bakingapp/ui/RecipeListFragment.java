@@ -11,11 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.baqueta.bakingapp.R;
 import com.baqueta.bakingapp.entities.Recipe;
 
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +36,8 @@ import timber.log.Timber;
 public class RecipeListFragment extends Fragment {
     private static final String LOG_TAG = RecipeListFragment.class.getSimpleName();
 
+    public static String BASE_URL = "http://go.udacity.com/";
+
     @BindView(R.id.recyclerview_recipes)
     RecyclerView mRecyclerView;
 
@@ -54,8 +56,13 @@ public class RecipeListFragment extends Fragment {
     public class RecipesCallback implements Callback<List<Recipe>> {
         @Override
         public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
-            mEmptyView.setVisibility(View.GONE);
-            mAdapter.swap(response.body());
+            Timber.d("Response code: " + response.code());
+            if (response.code() == HttpURLConnection.HTTP_OK) {
+                mEmptyView.setVisibility(View.GONE);
+                mAdapter.swap(response.body());
+            } else {
+                // TODO : Implement the messages to be displayed when there is a known server error
+            }
         }
 
         @Override
@@ -84,11 +91,7 @@ public class RecipeListFragment extends Fragment {
 
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(), ((TextView)view).getText(), Toast.LENGTH_SHORT).show();
                 int selectedPosition = getAdapterPosition();
-
-                Timber.d("recipe selected: " + recipes.get(selectedPosition));
-
                 Intent intent = new Intent(getActivity(), RecipeDetailActivity.class);
                 intent.putExtra("recipe", recipes.get(selectedPosition));
 
@@ -114,7 +117,7 @@ public class RecipeListFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return this.recipes.size();
+            return (this.recipes != null) ? this.recipes.size() : 0;
         }
 
         public void swap(List<Recipe> recipes) {
@@ -151,7 +154,7 @@ public class RecipeListFragment extends Fragment {
 
     private void fetchRecipes() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://go.udacity.com/")
+                .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         RecipeService recipeService = retrofit.create(RecipeService.class);

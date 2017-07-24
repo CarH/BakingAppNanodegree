@@ -16,7 +16,6 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
 /**
  * Created by CarH on 27/06/2017.
@@ -46,14 +45,12 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
         getSupportActionBar().setTitle(mRecipe.getName());
 
         mTwoPane = detailContainer != null;
-
-        Timber.d("Is Two Pane Mode? " + mTwoPane);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        RecipeDetailFragment recipeDetailFragment = (RecipeDetailFragment) getSupportFragmentManager().findFragmentById(R.id.recipe_detail_fragment);
+        RecipeDetailFragment recipeDetailFragment = (RecipeDetailFragment) getSupportFragmentManager().findFragmentById(R.id.recipe_list_fragment);
         recipeDetailFragment.setRecipe(mRecipe);
     }
 
