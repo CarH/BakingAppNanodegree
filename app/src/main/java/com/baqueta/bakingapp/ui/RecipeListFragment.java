@@ -1,5 +1,7 @@
 package com.baqueta.bakingapp.ui;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,7 +15,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.baqueta.bakingapp.R;
+import com.baqueta.bakingapp.data.RecipesContract;
+import com.baqueta.bakingapp.entities.Ingredient;
 import com.baqueta.bakingapp.entities.Recipe;
+import com.baqueta.bakingapp.entities.Step;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
@@ -60,8 +65,56 @@ public class RecipeListFragment extends Fragment {
             if (response.code() == HttpURLConnection.HTTP_OK) {
                 mEmptyView.setVisibility(View.GONE);
                 mAdapter.swap(response.body());
+
+                persist(response.body());
+
             } else {
                 // TODO : Implement the messages to be displayed when there is a known server error
+            }
+        }
+
+        private void persist(List<Recipe> recipes) {
+            ContentValues cv = new ContentValues();
+
+            for (Recipe recipe : recipes) {
+                cv.clear();
+                cv.put(RecipesContract.RecipeEntry.COLUMN_NAME, recipe.getName());
+                cv.put(RecipesContract.RecipeEntry.COLUMN_SERVER_ID, recipe.getServerId());
+                cv.put(RecipesContract.RecipeEntry.COLUMN_IMAGE_URL, recipe.getImageUrl());
+                cv.put(RecipesContract.RecipeEntry.COLUMN_SERVINGS, recipe.getServings());
+
+                long recipeFk = ContentUris.parseId(getContext().getContentResolver()
+                        .insert(RecipesContract.RecipeEntry.CONTENT_URI, cv));
+
+                // Insert all recipe's ingredients
+                for (Ingredient i : recipe.getIngredients()) {
+                    // Clear the content values
+                    cv.clear();
+
+                    cv.put(RecipesContract.IngredientEntry.COLUMN_NAME, i.getIngredient());
+                    cv.put(RecipesContract.IngredientEntry.COLUMN_MEASURE, i.getMeasure());
+                    cv.put(RecipesContract.IngredientEntry.COLUMN_QUANTITY, i.getQuantity());
+                    cv.put(RecipesContract.IngredientEntry.COLUMN_RECIPE_FK, recipeFk);
+
+                    getContext().getContentResolver()
+                            .insert(RecipesContract.IngredientEntry.CONTENT_URI, cv);
+                }
+
+                // Insert the recipe's steps
+                for (Step s : recipe.getSteps()) {
+                    // clear the content values
+                    cv.clear();
+
+                    cv.put(RecipesContract.StepEntry.COLUMN_STEP_ID, s.getId());
+                    cv.put(RecipesContract.StepEntry.COLUMN_DESC, s.getDescription());
+                    cv.put(RecipesContract.StepEntry.COLUMN_SHORT_DESC, s.getShortDescription());
+                    cv.put(RecipesContract.StepEntry.COLUMN_THUMBNAIL_URL, s.getThumbnailURL());
+                    cv.put(RecipesContract.StepEntry.COLUMN_VIDEO_URL, s.getVideoURL());
+                    cv.put(RecipesContract.StepEntry.COLUMN_RECIPE_FK, recipeFk);
+
+                    getContext().getContentResolver()
+                            .insert(RecipesContract.StepEntry.CONTENT_URI, cv);
+                }
             }
         }
 
