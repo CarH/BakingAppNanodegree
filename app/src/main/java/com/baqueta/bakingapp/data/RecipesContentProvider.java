@@ -21,6 +21,7 @@ public class RecipesContentProvider extends ContentProvider {
     public static final int RECIPE_WITH_ID  = 101;
     public static final int INGREDIENT      = 110;
     public static final int STEP            = 120;
+    public static final int STEP_WITH_ID    = 121;
 
     public static final UriMatcher sUriMatcher = buildMatcher();
 
@@ -30,6 +31,7 @@ public class RecipesContentProvider extends ContentProvider {
         matcher.addURI(RecipesContract.AUTHORITY, RecipesContract.RecipeEntry.TABLE_NAME + "/#", RECIPE_WITH_ID);
         matcher.addURI(RecipesContract.AUTHORITY, RecipesContract.IngredientEntry.TABLE_NAME, INGREDIENT);
         matcher.addURI(RecipesContract.AUTHORITY, RecipesContract.StepEntry.TABLE_NAME, STEP);
+        matcher.addURI(RecipesContract.AUTHORITY, RecipesContract.StepEntry.TABLE_NAME + "/#", STEP_WITH_ID);
 
         return matcher;
     }
@@ -97,6 +99,18 @@ public class RecipesContentProvider extends ContentProvider {
 
                 break;
             }
+            case STEP_WITH_ID:
+            {
+                long id = ContentUris.parseId(uri);
+                cursor = db.query(RecipesContract.StepEntry.TABLE_NAME,
+                        projection,
+                        "WHERE " + RecipesContract.StepEntry._ID  + " = ?",
+                        new String[] { String.valueOf(id) },
+                        null,
+                        null,
+                        null);
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown Uri: " + uri.toString());
         }
@@ -110,7 +124,41 @@ public class RecipesContentProvider extends ContentProvider {
     @Nullable
     @Override
     public String getType(@NonNull Uri uri) {
-        return null;
+        String type;
+        final String baseDirectoryType = "vnd.android.cursor.dir" + "/" + RecipesContract.AUTHORITY + "/";
+        final String baseItemType = "vnd.android.cursor.item" + "/" + RecipesContract.AUTHORITY + "/";
+
+        switch (sUriMatcher.match(uri)) {
+            case RECIPE:
+            {
+                type = baseDirectoryType + RecipesContract.RecipeEntry.TABLE_NAME;
+                break;
+            }
+            case RECIPE_WITH_ID:
+            {
+                type = baseItemType + RecipesContract.RecipeEntry.TABLE_NAME;
+                break;
+            }
+            case INGREDIENT:
+            {
+                type = baseDirectoryType + RecipesContract.IngredientEntry.TABLE_NAME;
+                break;
+            }
+            case STEP:
+            {
+                type = baseDirectoryType + RecipesContract.StepEntry.TABLE_NAME;
+                break;
+            }
+            case STEP_WITH_ID:
+            {
+                type = baseItemType + RecipesContract.StepEntry.TABLE_NAME;
+                break;
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown Uri: " + uri.toString());
+        }
+
+        return type;
     }
 
     @Nullable
@@ -207,12 +255,42 @@ public class RecipesContentProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
             case RECIPE:
             {
-                updatedRows = db.update
+                updatedRows = db.update(RecipesContract.RecipeEntry.TABLE_NAME,
+                        values,
+                        selection,
+                        selectionArgs);
+                break;
+            }
+            case RECIPE_WITH_ID:
+            {
+                long id = ContentUris.parseId(uri);
+                updatedRows = db.update(RecipesContract.RecipeEntry.TABLE_NAME,
+                        values,
+                        "WHERE " + RecipesContract.RecipeEntry._ID + " = ?",
+                        new String[] { String.valueOf(id) });
+                break;
+            }
+            case INGREDIENT:
+            {
+                updatedRows = db.update(RecipesContract.IngredientEntry.TABLE_NAME,
+                        values,
+                        selection,
+                        selectionArgs);
+                break;
+            }
+            case STEP:
+            {
+                updatedRows = db.update(RecipesContract.StepEntry.TABLE_NAME,
+                        values,
+                        selection,
+                        selectionArgs);
                 break;
             }
             default:
                 throw new UnsupportedOperationException("Unknown Uri: " + uri.toString());
         }
+
+        getContext().getContentResolver().notifyChange(uri, null);
         return updatedRows;
     }
 }
