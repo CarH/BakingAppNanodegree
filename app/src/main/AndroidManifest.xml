@@ -25,6 +25,11 @@
         <activity android:name=".ui.IngredientsDetailActivity"/>
         <activity android:name=".ui.StepDetailActivity"/>
 
+        <provider
+            android:authorities="com.baqueta.bakingapp.provider"
+            android:name="com.baqueta.bakingapp.data.RecipesContentProvider"
+            android:exported="false" />
+        
     </application>
 
 </manifest>
